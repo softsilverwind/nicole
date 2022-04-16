@@ -1,26 +1,24 @@
-use self::baselist::BaseList;
+use crate::base_veclist::BaseVecList;
 
 mod iter;
 mod index;
 
-pub mod baselist;
-
-pub use self::index::LinkedListIndex;
+pub use self::index::VecListIndex;
 pub use self::iter::{Iter, IterMut, IntoIter};
 
 #[derive(Clone, Debug)]
-pub struct LinkedList<T>
+pub struct VecList<T>
 {
-    base_list: BaseList<T>
+    base_list: BaseVecList<T>
 }
 
-impl<T> LinkedList<T>
+impl<T> VecList<T>
 {
     pub fn new() -> Self
         where T: Default
     {
         Self {
-            base_list: BaseList::new(Default::default(), Default::default())
+            base_list: BaseVecList::new(Default::default(), Default::default())
         }
     }
 
@@ -28,7 +26,7 @@ impl<T> LinkedList<T>
         where T: Default
     {
         Self {
-            base_list: BaseList::with_capacity(Default::default(), Default::default(), capacity + 2)
+            base_list: BaseVecList::with_capacity(Default::default(), Default::default(), capacity + 2)
         }
     }
 
@@ -53,18 +51,18 @@ impl<T> LinkedList<T>
         self.base_list.shrink_to_fit()
     }
 
-    pub fn insert(&mut self, index: LinkedListIndex, element: T)
+    pub fn insert(&mut self, index: VecListIndex, element: T)
     {
         self.base_list.insert(index.base_index, element)
     } 
 
-    pub fn remove_between<F>(&mut self, start: LinkedListIndex, end: LinkedListIndex, f: F)
+    pub fn remove_between<F>(&mut self, start: VecListIndex, end: VecListIndex, f: F)
         where F: FnMut(&T)
     {
         self.base_list.remove_between(start.base_index, end.base_index, f)
     }
 
-    pub fn remove<F>(&mut self, index: LinkedListIndex, f: F) where F: FnMut(&T)
+    pub fn remove<F>(&mut self, index: VecListIndex, f: F) where F: FnMut(&T)
     {
         self.base_list.remove(index.base_index, f)
     }
@@ -117,7 +115,7 @@ impl<T> LinkedList<T>
     }
 }
 
-impl<T> IntoIterator for LinkedList<T>
+impl<T> IntoIterator for VecList<T>
     where T: Clone
 {
     type Item = T;

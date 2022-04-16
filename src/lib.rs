@@ -1,16 +1,11 @@
 pub mod index;
-pub mod arraylist;
+pub mod veclist;
+pub mod base_veclist;
 
 mod standard_impls;
 
 pub use index::{
     IndexExt, ForwardIndex, BackwardIndex, BidirectionalIndex
 };
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+pub use veclist::VecList;
+pub use base_veclist::BaseVecList;

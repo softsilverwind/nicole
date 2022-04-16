@@ -1,18 +1,18 @@
 use std::mem;
 use super::INVALID;
 
-use super::BaseList;
+use super::BaseVecList;
 
 pub struct Iter<'a, T>
     where T: 'a
 {
-    parent: &'a BaseList<T>,
+    parent: &'a BaseVecList<T>,
     index: usize
 }
 
 impl<'a, T> Iter<'a, T>
 {
-    pub fn new(parent: &'a BaseList<T>, index: usize) -> Self
+    pub fn new(parent: &'a BaseVecList<T>, index: usize) -> Self
     {
         Self { parent, index }
     }
@@ -37,13 +37,13 @@ impl<'a, T> Iterator for Iter<'a, T>
 pub struct IterMut<'a, T>
     where T: 'a
 {
-    parent: &'a mut BaseList<T>,
+    parent: &'a mut BaseVecList<T>,
     index: usize
 }
 
 impl<'a, T> IterMut<'a, T>
 {
-    pub fn new(parent: &'a mut BaseList<T>, index: usize) -> Self
+    pub fn new(parent: &'a mut BaseVecList<T>, index: usize) -> Self
     {
         Self { parent, index }
     }
@@ -70,13 +70,13 @@ impl<'a, T> Iterator for IterMut<'a, T>
 
 pub struct IntoIter<T>
 {
-    parent: BaseList<T>,
+    parent: BaseVecList<T>,
     index: usize
 }
 
 impl<T> IntoIter<T>
 {
-    pub fn new(parent: BaseList<T>, index: usize) -> Self
+    pub fn new(parent: BaseVecList<T>, index: usize) -> Self
     {
         Self { parent, index }
     }

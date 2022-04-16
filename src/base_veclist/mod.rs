@@ -8,7 +8,7 @@ mod index;
 
 pub use self::{
     iter::{Iter, IterMut, IntoIter},
-    index::BaseListIndex
+    index::BaseVecListIndex
 };
 
 #[derive(Clone)]
@@ -25,7 +25,7 @@ impl<T> Node<T>
 }
 
 #[derive(Clone)]
-pub struct BaseList<T>
+pub struct BaseVecList<T>
 {
     elements: Vec<Node<T>>,
     free: Vec<usize>
@@ -35,7 +35,7 @@ const INVALID: usize = usize::MAX;
 const FIRST: usize = 0;
 const LAST: usize = 1;
 
-impl<T> BaseList<T>
+impl<T> BaseVecList<T>
 {
     fn next(&self, i: usize) -> usize { self.elements[i].next }
     fn prev(&self, i: usize) -> usize { self.elements[i].prev }
@@ -88,7 +88,7 @@ impl<T> BaseList<T>
 
     fn _insert(&mut self, next: usize, element: T)
     {
-        assert!(next >= LAST, "Cannot insert before the first element or after the last element of a BaseList");
+        assert!(next >= LAST, "Cannot insert before the first element or after the last element of a BaseVecList");
         let prev = self.prev(next);
 
         let elem = Node { prev, next, elem: element };
@@ -110,7 +110,7 @@ impl<T> BaseList<T>
 
     }
 
-    pub fn insert(&mut self, index: BaseListIndex, element: T)
+    pub fn insert(&mut self, index: BaseVecListIndex, element: T)
     {
         self._insert(index.index, element);
     }
@@ -118,7 +118,7 @@ impl<T> BaseList<T>
     fn _remove_between<F>(&mut self, start: usize, end: usize, mut f: F)
         where F: FnMut(&T)
     {
-        assert!(start > LAST && end != INVALID, "Cannot remove the first or last element of a BaseList!");
+        assert!(start > LAST && end != INVALID, "Cannot remove the first or last element of a BaseVecList!");
 
         let mut i = start;
         while i != end && i != LAST {
@@ -133,7 +133,7 @@ impl<T> BaseList<T>
         self.elements[end].prev = start_prev;
     }
 
-    pub fn remove_between<F>(&mut self, start: BaseListIndex, end: BaseListIndex, f: F)
+    pub fn remove_between<F>(&mut self, start: BaseVecListIndex, end: BaseVecListIndex, f: F)
         where F: FnMut(&T)
     {
         self._remove_between(start.index, end.index, f);
@@ -146,7 +146,7 @@ impl<T> BaseList<T>
         self._remove_between(at, next, f);
     }
 
-    pub fn remove<F>(&mut self, index: BaseListIndex, f: F)
+    pub fn remove<F>(&mut self, index: BaseVecListIndex, f: F)
         where F: FnMut(&T)
     {
         self._remove(index.index, f);
@@ -200,7 +200,7 @@ impl<T> BaseList<T>
     }
 }
 
-impl<T> IntoIterator for BaseList<T>
+impl<T> IntoIterator for BaseVecList<T>
     where T: Clone
 {
     type Item = T;
@@ -213,12 +213,12 @@ impl<T> IntoIterator for BaseList<T>
 }
 
 
-impl<T> Debug for BaseList<T>
+impl<T> Debug for BaseVecList<T>
     where T: Debug
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result
     {
-        write!(f, "BaseList [ ")?;
+        write!(f, "BaseVecList [ ")?;
         for node in self.iter() {
             write!(f, "{:?} ", node)?;
         }

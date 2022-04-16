@@ -1,15 +1,15 @@
 use std::iter::Peekable;
-use super::baselist;
+use crate::base_veclist;
 
 pub struct Iter<'a, T>
     where T: 'a
 {
-    base_iter: Peekable<baselist::Iter<'a, T>>
+    base_iter: Peekable<base_veclist::Iter<'a, T>>
 }
 
 impl <'a, T> Iter<'a, T>
 {
-    pub fn new(base_iter: Peekable<baselist::Iter<'a, T>>) -> Self { Self { base_iter } }
+    pub fn new(base_iter: Peekable<base_veclist::Iter<'a, T>>) -> Self { Self { base_iter } }
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
@@ -30,12 +30,12 @@ impl<'a, T> Iterator for Iter<'a, T>
 pub struct IterMut<'a, T>
     where T: 'a
 {
-    base_iter: Peekable<baselist::IterMut<'a, T>>
+    base_iter: Peekable<base_veclist::IterMut<'a, T>>
 }
 
 impl <'a, T> IterMut<'a, T>
 {
-    pub fn new(base_iter: Peekable<baselist::IterMut<'a, T>>) -> Self { Self { base_iter } }
+    pub fn new(base_iter: Peekable<base_veclist::IterMut<'a, T>>) -> Self { Self { base_iter } }
 }
 
 impl<'a, T> Iterator for IterMut<'a, T>
@@ -56,13 +56,13 @@ impl<'a, T> Iterator for IterMut<'a, T>
 pub struct IntoIter<T>
     where T: Clone
 {
-    base_iter: Peekable<baselist::IntoIter<T>>
+    base_iter: Peekable<base_veclist::IntoIter<T>>
 }
 
 impl<T> IntoIter<T>
     where T: Clone
 {
-    pub fn new(base_iter: Peekable<baselist::IntoIter<T>>) -> Self { Self { base_iter } }
+    pub fn new(base_iter: Peekable<base_veclist::IntoIter<T>>) -> Self { Self { base_iter } }
 }
 
 impl<T> Iterator for IntoIter<T>
