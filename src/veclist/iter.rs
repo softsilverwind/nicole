@@ -1,15 +1,20 @@
-use std::iter::Peekable;
-use crate::base_veclist;
+use super::INVALID;
+
+use super::{VecList, ERROR_MSG};
 
 pub struct Iter<'a, T>
     where T: 'a
 {
-    base_iter: Peekable<base_veclist::Iter<'a, T>>
+    veclist: &'a VecList<T>,
+    index: usize
 }
 
-impl <'a, T> Iter<'a, T>
+impl<'a, T> Iter<'a, T>
 {
-    pub fn new(base_iter: Peekable<base_veclist::Iter<'a, T>>) -> Self { Self { base_iter } }
+    pub fn new(veclist: &'a VecList<T>, index: usize) -> Self
+    {
+        Self { veclist, index }
+    }
 }
 
 impl<'a, T> Iterator for Iter<'a, T>
@@ -18,64 +23,115 @@ impl<'a, T> Iterator for Iter<'a, T>
     type Item = &'a T;
     fn next(&mut self) -> Option<Self::Item>
     {
-        if let None = self.base_iter.peek() {
-            None
-        }
-        else {
-            self.base_iter.next()
+        match self.index {
+            INVALID => None,
+            n => {
+                self.index = self.veclist.elements[n].next; 
+                Some(self.veclist.elements[n].elem.as_ref().expect(ERROR_MSG))
+            }
         }
     }
 }
 
+#[cfg(feature = "unsafe")]
 pub struct IterMut<'a, T>
     where T: 'a
 {
-    base_iter: Peekable<base_veclist::IterMut<'a, T>>
+    veclist: &'a mut VecList<T>,
+    index: usize
 }
 
-impl <'a, T> IterMut<'a, T>
+#[cfg(feature = "unsafe")]
+impl<'a, T> IterMut<'a, T>
 {
-    pub fn new(base_iter: Peekable<base_veclist::IterMut<'a, T>>) -> Self { Self { base_iter } }
+    pub fn new(veclist: &'a mut VecList<T>, index: usize) -> Self
+    {
+        Self { veclist, index }
+    }
 }
 
+#[cfg(feature = "unsafe")]
 impl<'a, T> Iterator for IterMut<'a, T>
     where T: 'a
 {
     type Item = &'a mut T;
-    fn next(&mut self) -> Option<Self::Item>
+    fn next<'b>(&'b mut self) -> Option<Self::Item>
     {
-        if let None = self.base_iter.peek() {
-            None
-        }
-        else {
-            self.base_iter.next()
+        unsafe {
+            match self.index {
+                INVALID => None,
+                n => {
+                    self.index = self.veclist.elements[n].next;
+                    let ret = self.veclist.elements[n].elem.as_mut().expect(ERROR_MSG);
+                    Some(std::mem::transmute::<&'b mut T, &'a mut T>(ret))
+                }
+            }
         }
     }
 }
 
 pub struct IntoIter<T>
-    where T: Clone
 {
-    base_iter: Peekable<base_veclist::IntoIter<T>>
+    veclist: VecList<T>,
+    index: usize
 }
 
 impl<T> IntoIter<T>
-    where T: Clone
 {
-    pub fn new(base_iter: Peekable<base_veclist::IntoIter<T>>) -> Self { Self { base_iter } }
+    pub fn new(veclist: VecList<T>, index: usize) -> Self
+    {
+        Self { veclist, index }
+    }
 }
 
 impl<T> Iterator for IntoIter<T>
-    where T: Clone
 {
     type Item = T;
     fn next(&mut self) -> Option<Self::Item>
     {
-        if let None = self.base_iter.peek() {
-            None
+        match self.index {
+            INVALID => None,
+            n => {
+                self.index = self.veclist.elements[n].next;
+                Some(self.veclist.elements[n].elem.take().expect(ERROR_MSG))
+            }
         }
-        else {
-            self.base_iter.next()
+    }
+}
+
+pub struct DrainIter<'a, T>
+{
+    veclist: &'a mut VecList<T>,
+    index: usize
+}
+
+impl<'a, T> DrainIter<'a, T>
+{
+    pub fn new(veclist: &'a mut VecList<T>, index: usize) -> Self
+    {
+        Self { veclist, index }
+    }
+}
+
+impl<'a, T> Iterator for DrainIter<'a, T>
+{
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item>
+    {
+        match self.index {
+            INVALID => None,
+            n => {
+                self.index = self.veclist.elements[n].next;
+                Some(self.veclist.elements[n].elem.take().expect(ERROR_MSG))
+            }
         }
+    }
+}
+
+impl<'a, T> Drop for DrainIter<'a, T>
+{
+    fn drop(&mut self)
+    {
+        self.for_each(|_|());
     }
 }

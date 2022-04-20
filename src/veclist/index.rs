@@ -1,45 +1,38 @@
 use std::ops::{Index, IndexMut};
 
-use crate::base_veclist::BaseVecListIndex;
+use super::{VecList, FIRST, LAST, INVALID, ERROR_MSG};
 use crate::index::{IndexExt, ForwardIndex, BackwardIndex};
-
-use super::VecList;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct VecListIndex
 {
-    pub(super) base_index: BaseVecListIndex
+    pub(super) index: usize
 }
 
 impl<T> IndexExt<VecListIndex> for VecList<T>
 {
-    fn valid(&self, idx: &VecListIndex) -> bool
-    {
-        idx.base_index != self.base_list.begin()
-            && idx.base_index != self.base_list.end()
-            && self.base_list.valid(&idx.base_index)
-    }
+    fn valid(&self, idx: &VecListIndex) -> bool { idx.index != INVALID }
 }
 
 impl<T> ForwardIndex<VecListIndex> for VecList<T>
 {
-    fn begin(&self) -> VecListIndex { VecListIndex { base_index: self.base_list.next(self.base_list.begin()) } } 
-    fn increment(&self, idx: &mut VecListIndex) { self.base_list.increment(&mut idx.base_index) }
+    fn begin(&self) -> VecListIndex { VecListIndex { index: FIRST } }
+    fn increment(&self, idx: &mut VecListIndex) { idx.index = self.elements[idx.index].next; }
 }
 
 impl<T> BackwardIndex<VecListIndex> for VecList<T>
 {
-    fn end(&self) -> VecListIndex { VecListIndex { base_index: self.base_list.prev(self.base_list.end()) } }
-    fn decrement(&self, idx: &mut VecListIndex) { self.base_list.decrement(&mut idx.base_index) }
+    fn end(&self) -> VecListIndex { VecListIndex { index: LAST } }
+    fn decrement(&self, idx: &mut VecListIndex) { idx.index = self.elements[idx.index].prev; }
 }
+
 
 impl<T> Index<VecListIndex> for VecList<T>
 {
     type Output = T;
     fn index(&self, index: VecListIndex) -> &Self::Output
     {
-        assert!(self.valid(&index), "Invalid VecList index dereference");
-        &self.base_list[index.base_index]
+        self.elements[index.index].elem.as_ref().expect(ERROR_MSG)
     }
 }
 
@@ -47,7 +40,6 @@ impl<T> IndexMut<VecListIndex> for VecList<T>
 {
     fn index_mut(&mut self, index: VecListIndex) -> &mut Self::Output
     {
-        assert!(self.valid(&index), "Invalid VecList index dereference");
-        &mut self.base_list[index.base_index]
+        self.elements[index.index].elem.as_mut().expect(ERROR_MSG)
     }
 }

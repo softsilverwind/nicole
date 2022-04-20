@@ -4,4 +4,8 @@ version = "0.1.0"
 authors = ["Nick Vathis <nvathis@gmail.com>"]
 edition = "2018"
 
+[features]
+unsafe = []
+
 [dependencies]
+uuid = { version = "1.0.0", features = ["v4"] }
