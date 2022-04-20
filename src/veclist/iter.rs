@@ -1,4 +1,4 @@
-use super::INVALID;
+use super::{INVALID, LAST};
 
 use super::{VecList, ERROR_MSG};
 
@@ -24,7 +24,7 @@ impl<'a, T> Iterator for Iter<'a, T>
     fn next(&mut self) -> Option<Self::Item>
     {
         match self.index {
-            INVALID => None,
+            INVALID | LAST => None,
             n => {
                 self.index = self.veclist.elements[n].next; 
                 Some(self.veclist.elements[n].elem.as_ref().expect(ERROR_MSG))
@@ -59,7 +59,7 @@ impl<'a, T> Iterator for IterMut<'a, T>
     {
         unsafe {
             match self.index {
-                INVALID => None,
+                INVALID | LAST => None,
                 n => {
                     self.index = self.veclist.elements[n].next;
                     let ret = self.veclist.elements[n].elem.as_mut().expect(ERROR_MSG);
@@ -90,7 +90,7 @@ impl<T> Iterator for IntoIter<T>
     fn next(&mut self) -> Option<Self::Item>
     {
         match self.index {
-            INVALID => None,
+            INVALID | LAST => None,
             n => {
                 self.index = self.veclist.elements[n].next;
                 Some(self.veclist.elements[n].elem.take().expect(ERROR_MSG))
@@ -119,9 +119,11 @@ impl<'a, T> Iterator for DrainIter<'a, T>
     fn next(&mut self) -> Option<Self::Item>
     {
         match self.index {
-            INVALID => None,
+            INVALID | LAST => None,
             n => {
                 self.index = self.veclist.elements[n].next;
+                self.veclist.elements[n].next = INVALID;
+                self.veclist.elements[n].prev = INVALID;
                 Some(self.veclist.elements[n].elem.take().expect(ERROR_MSG))
             }
         }

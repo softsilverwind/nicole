@@ -9,6 +9,13 @@ pub struct LinkedListIndex<T>
     pub(super) list_ptr: *mut ListNode<T>
 }
 
+impl<T> std::fmt::Debug for LinkedListIndex<T>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("LinkedListIndex {}")
+    }
+}
+
 impl<T> Copy for LinkedListIndex<T>
 {
 }

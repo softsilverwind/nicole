@@ -128,7 +128,10 @@ impl<T> VecList<T>
             Bound::Unbounded => LAST
         };
 
-        assert!(start > LAST && end != INVALID, "Cannot remove the first or last element of a VecList!");
+        assert!(start > LAST && end != INVALID, "{}", ERROR_MSG);
+        if start == end {
+            return DrainIter::new(self, INVALID);
+        }
 
         let mut i = start;
         while i != end && i != LAST {
@@ -137,9 +140,13 @@ impl<T> VecList<T>
         }
 
         let start_prev = self.elements[start].prev;
+        let i_prev = self.elements[i].prev;
 
-        self.elements[start_prev].next = end;
-        self.elements[end].prev = start_prev;
+        self.elements[start_prev].next = i;
+        self.elements[i].prev = start_prev;
+
+        self.elements[start].prev = INVALID;
+        self.elements[i_prev].next = INVALID;
 
         DrainIter::new(self, start)
     }
@@ -154,6 +161,9 @@ impl<T> VecList<T>
 
         self.elements[prev].next = next;
         self.elements[next].prev = prev;
+
+        self.elements[index].next = INVALID;
+        self.elements[index].prev = INVALID;
 
         ret.expect(ERROR_MSG)
     }
@@ -194,18 +204,18 @@ impl<T> VecList<T>
 
     pub fn len(&self) -> usize
     {
-        self.elements.len() - self.free.len()
+        self.elements.len() - self.free.len() - 2
     }
 
     pub fn iter<'a>(&'a self) -> Iter<'a, T>
     {
-        Iter::new(self, FIRST)
+        Iter::new(self, self.elements[FIRST].next)
     }
 
     #[cfg(feature = "unsafe")]
     pub fn iter_mut<'a>(&'a mut self) -> iter::IterMut<'a, T>
     {
-        iter::IterMut::new(self, FIRST)
+        iter::IterMut::new(self, self.elements[FIRST].next)
     }
 }
 

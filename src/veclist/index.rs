@@ -11,18 +11,18 @@ pub struct VecListIndex
 
 impl<T> IndexExt<VecListIndex> for VecList<T>
 {
-    fn valid(&self, idx: &VecListIndex) -> bool { idx.index != INVALID }
+    fn valid(&self, idx: &VecListIndex) -> bool { idx.index > LAST && idx.index != INVALID }
 }
 
 impl<T> ForwardIndex<VecListIndex> for VecList<T>
 {
-    fn begin(&self) -> VecListIndex { VecListIndex { index: FIRST } }
+    fn begin(&self) -> VecListIndex { VecListIndex { index: self.elements[FIRST].next } }
     fn increment(&self, idx: &mut VecListIndex) { idx.index = self.elements[idx.index].next; }
 }
 
 impl<T> BackwardIndex<VecListIndex> for VecList<T>
 {
-    fn end(&self) -> VecListIndex { VecListIndex { index: LAST } }
+    fn end(&self) -> VecListIndex { VecListIndex { index: self.elements[LAST].prev } }
     fn decrement(&self, idx: &mut VecListIndex) { idx.index = self.elements[idx.index].prev; }
 }
 
