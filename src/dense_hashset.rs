@@ -30,16 +30,16 @@ impl<T> DenseHashSet<T>
 
     fn remove_at(&mut self, elem_index: usize) -> Option<T>
     {
-        if elem_index == self.elements.len() - 1 {
+        if elem_index == INVALID {
+            None
+        }
+        else if elem_index == self.elements.len() - 1 {
             self.elements.pop()
         }
-        else if elem_index != INVALID {
+        else {
             let ret = self.elements.swap_remove(elem_index);
             self.indices[self.elements[elem_index].id().into()] = elem_index;
             Some(ret)
-        }
-        else {
-            None
         }
     }
 

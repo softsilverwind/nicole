@@ -1,3 +1,4 @@
+pub mod dense_hashmap;
 pub mod dense_hashset;
 pub mod id_set;
 pub mod identifier;
@@ -9,6 +10,7 @@ pub mod veclist;
 pub use identifier::{IdLike, Identifier};
 pub use index::{IndexExt, ForwardIndex, BackwardIndex, BidirectionalIndex};
 
+pub use dense_hashmap::DenseHashMap;
 pub use dense_hashset::DenseHashSet;
 pub use id_set::IdSet;
 pub use veclist::VecList;
