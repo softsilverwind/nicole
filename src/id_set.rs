@@ -69,7 +69,7 @@ impl<T> IdSet<T>
 
         // The idea here is that:
         // a. All other methods that mutate the RefCell should expect a &mut self
-        // - Thus, before trying again to borrow_mut, all iteratos will have been dropped
+        // - Thus, before trying again to borrow_mut, all iterators will have been dropped
         // - Thus, all element borrows returned from the unsafe iterator will have been dropped
         // b. Yielded elements are already tied to the IdSet lifetime, so no &mut self method can be called
         //    as long as a borrow on an element is alive
@@ -137,5 +137,5 @@ impl<T> IntoIterator for IdSet<T>
             .filter_map(|(id, exists)| if exists { Some(T::from(id)) } else { None } )
             .collect::<Vec<_>>()
             .into_iter()
-    }   
+    }
 }
