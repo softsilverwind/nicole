@@ -1,7 +1,8 @@
 use std::{
     fmt::{self, Debug, Formatter},
     usize,
-    ops::{Bound, RangeBounds}
+    ops::{Bound, RangeBounds},
+    iter::FromIterator
 };
     
 mod iter;
@@ -236,12 +237,29 @@ impl<T> Debug for VecList<T>
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result
     {
-        write!(f, "VecList [ ")?;
-        for node in self.iter() {
-            write!(f, "{:?} ", node)?;
+        let len = self.len();
+
+        write!(f, "VecList [")?;
+        for (i, node) in self.iter().enumerate() {
+            write!(f, "{:?}", node)?;
+            if i < len - 1 {
+                write!(f, ", ")?;
+            }
         }
-        writeln!(f, "]")?;
+        write!(f, "]")?;
         Ok(())
     }
 }
 
+impl<ItemT> FromIterator<ItemT> for VecList<ItemT>
+{
+    fn from_iter<IteratorT>(iter: IteratorT) -> Self
+        where IteratorT: IntoIterator<Item = ItemT>
+    {
+        let mut list = VecList::new();
+        for item in iter {
+            list.push_back(item);
+        }
+        list
+    }
+}
