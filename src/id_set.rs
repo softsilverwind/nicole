@@ -1,4 +1,7 @@
-use std::iter::FromIterator;
+use std::{
+    iter::FromIterator,
+    fmt::Debug
+};
 
 #[cfg(feature = "unsafe")]
 use std::cell::RefCell;
@@ -12,6 +15,16 @@ pub struct IdSet<T> {
     materialized: RefCell<Vec<T>>,
     #[cfg(not(feature = "unsafe"))]
     phantom: std::marker::PhantomData<T>
+}
+
+impl<T> Debug for IdSet<T>
+    where
+        T: Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        f.debug_struct("IdSet").field("set", &self.set).finish()
+    }
 }
 
 impl<T> IdSet<T>

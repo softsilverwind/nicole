@@ -1,4 +1,7 @@
-use std::iter::FromIterator;
+use std::{
+    iter::FromIterator,
+    fmt::Debug
+};
 
 use crate::identifier::Identifier;
 
@@ -9,6 +12,16 @@ pub struct DenseHashSet<T> {
 }
 
 const INVALID: usize = usize::MAX;
+
+impl<T> Debug for DenseHashSet<T>
+    where
+        T: Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        f.debug_struct("DenseHashSet").field("elements", &self.elements).finish()
+    }
+}
 
 impl<T> DenseHashSet<T>
     where T: Identifier

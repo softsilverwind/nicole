@@ -20,7 +20,6 @@ impl<K, V> Debug for DenseHashMap<K, V>
         f.debug_struct("DenseHashMap").field("elements", &self.elements).finish()
     }
 }
-          
 
 impl<K, V> DenseHashMap<K, V>
     where K: IdLike

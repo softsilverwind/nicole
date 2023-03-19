@@ -1,12 +1,11 @@
 [package]
 name = "nicole"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Nick Vathis <nvathis@gmail.com>"]
 edition = "2018"
 
 [features]
 unsafe = []
-default = ["unsafe"]
 
 [dependencies]
 uuid = { version = "1.0.0", features = ["v4"] }
