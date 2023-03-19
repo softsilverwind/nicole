@@ -58,13 +58,22 @@ impl<K, V> IdMap<K, V>
             .filter_map(|(id, elem)| elem.map(|x| (id.into(), x)))
     }
 
-    pub fn iter_copy(&self) -> impl Iterator<Item=(K, &V)>
+    pub fn iter_key_copy(&self) -> impl Iterator<Item=(K, &V)>
         where V: Clone
     {
         self.set
             .iter()
             .enumerate()
             .filter_map(|(id, elem)| elem.as_ref().map(|x| (id.into(), x)))
+    }
+
+    pub fn iter_key_copy_mut(&mut self) -> impl Iterator<Item=(K, &mut V)>
+        where V: Clone
+    {
+        self.set
+            .iter_mut()
+            .enumerate()
+            .filter_map(|(id, elem)| elem.as_mut().map(|x| (id.into(), x)))
     }
 
     pub fn max_key(&self) -> K
