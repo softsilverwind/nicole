@@ -6,24 +6,24 @@ use std::{
 use crate::identifier::Identifier;
 
 #[derive(Default, Clone)]
-pub struct DenseHashSet<T> {
+pub struct DenseSet<T> {
     elements: Vec<T>,
     indices: Vec<usize>
 }
 
 const INVALID: usize = usize::MAX;
 
-impl<T> Debug for DenseHashSet<T>
+impl<T> Debug for DenseSet<T>
     where
         T: Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
     {
-        f.debug_struct("DenseHashSet").field("elements", &self.elements).finish()
+        f.debug_struct("DenseSet").field("elements", &self.elements).finish()
     }
 }
 
-impl<T> DenseHashSet<T>
+impl<T> DenseSet<T>
     where T: Identifier
 {
     pub fn new() -> Self
@@ -91,14 +91,14 @@ impl<T> DenseHashSet<T>
     }
 }
 
-impl<T> FromIterator<T> for DenseHashSet<T>
+impl<T> FromIterator<T> for DenseSet<T>
     where T: Identifier,
 {
     fn from_iter<IT>(iter: IT) -> Self
     where
         IT: IntoIterator<Item = T>,
     {
-        let mut ret = DenseHashSet::new();
+        let mut ret = DenseSet::new();
         for item in iter.into_iter() {
             ret.insert(item);
         }
@@ -107,7 +107,7 @@ impl<T> FromIterator<T> for DenseHashSet<T>
     }
 }
 
-impl<T> Extend<T> for DenseHashSet<T>
+impl<T> Extend<T> for DenseSet<T>
     where T: Identifier
 {
     fn extend<IT>(&mut self, iter: IT)
@@ -120,7 +120,7 @@ impl<T> Extend<T> for DenseHashSet<T>
     }
 }
 
-impl<T> IntoIterator for DenseHashSet<T>
+impl<T> IntoIterator for DenseSet<T>
     where T: Identifier
 {
     type Item = T;

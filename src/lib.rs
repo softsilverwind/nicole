@@ -1,7 +1,6 @@
-pub mod dense_hashmap;
-pub mod dense_hashset;
-pub mod id_set;
+pub mod dense;
 pub mod identifier;
+pub mod idlike;
 pub mod index;
 pub mod veclist;
 
@@ -10,10 +9,9 @@ pub mod veclist;
 pub use identifier::{IdLike, Identifier};
 pub use index::{IndexExt, ForwardIndex, BackwardIndex, BidirectionalIndex};
 
-pub use dense_hashmap::DenseHashMap;
-pub use dense_hashset::DenseHashSet;
-pub use id_set::IdSet;
 pub use veclist::VecList;
+pub use dense::{map::DenseMap, set::DenseSet};
+pub use idlike::{map::IdMap, set::IdSet};
 
 #[cfg(feature = "unsafe")] pub use linkedlist::LinkedList;
 

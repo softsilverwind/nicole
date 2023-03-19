@@ -8,7 +8,7 @@ use std::cell::RefCell;
 
 use crate::identifier::IdLike;
 
-#[derive(Default, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct IdSet<T> {
     set: Vec<bool>,
     #[cfg(feature = "unsafe")]
@@ -17,20 +17,11 @@ pub struct IdSet<T> {
     phantom: std::marker::PhantomData<T>
 }
 
-impl<T> Debug for IdSet<T>
-    where
-        T: Debug,
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        f.debug_struct("IdSet").field("set", &self.set).finish()
-    }
-}
-
 impl<T> IdSet<T>
     where T: IdLike,
 {
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             set: Vec::new(),
             #[cfg(feature = "unsafe")]
@@ -40,12 +31,14 @@ impl<T> IdSet<T>
         }
     }
 
-    pub fn contains(&self, value: &T) -> bool {
+    pub fn contains(&self, value: &T) -> bool
+    {
         let pos: usize = (*value).into();
         pos < self.set.len() && self.set[pos]
     }
 
-    pub fn remove(&mut self, value: &T) {
+    pub fn remove(&mut self, value: &T)
+    {
         #[cfg(feature = "unsafe")]
         self.materialized.borrow_mut().clear();
 
@@ -56,7 +49,8 @@ impl<T> IdSet<T>
         }
     }
 
-    pub fn insert(&mut self, value: T) {
+    pub fn insert(&mut self, value: T)
+    {
         #[cfg(feature = "unsafe")]
         self.materialized.borrow_mut().clear();
 
@@ -102,6 +96,15 @@ impl<T> IdSet<T>
             .iter()
             .enumerate()
             .filter_map(|(id, &exists)| if exists { Some(T::from(id)) } else { None } )
+    }
+
+    pub fn max(&self) -> T
+    {
+        self.set
+            .iter()
+            .enumerate()
+            .rfind(|(_, x)| **x).map(|(i, _)| i.into())
+            .unwrap_or_else(|| T::null())
     }
 }
 

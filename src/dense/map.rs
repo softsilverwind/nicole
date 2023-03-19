@@ -1,28 +1,28 @@
 use std::{ops::{Index, IndexMut}, fmt::Debug};
 
-use crate::IdLike;
+use crate::Identifier;
 
 #[derive(Default, Clone)]
-pub struct DenseHashMap<K, V> {
+pub struct DenseMap<K, V> {
     elements: Vec<(K, V)>,
     indices: Vec<usize>
 }
 
 const INVALID: usize = usize::MAX;
 
-impl<K, V> Debug for DenseHashMap<K, V>
+impl<K, V> Debug for DenseMap<K, V>
     where
         K: Debug,
         V: Debug
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
     {
-        f.debug_struct("DenseHashMap").field("elements", &self.elements).finish()
+        f.debug_struct("DenseMap").field("elements", &self.elements).finish()
     }
 }
 
-impl<K, V> DenseHashMap<K, V>
-    where K: IdLike
+impl<K, V> DenseMap<K, V>
+    where K: Identifier
 {
     pub fn new() -> Self
     {
@@ -34,7 +34,7 @@ impl<K, V> DenseHashMap<K, V>
 
     pub fn contains_key(&self, key: &K) -> bool
     {
-        let pos: usize = (*key).into();
+        let pos: usize = key.id().into();
 
         pos < self.indices.len() && self.indices[pos] != INVALID
     }
@@ -49,14 +49,14 @@ impl<K, V> DenseHashMap<K, V>
         }
         else {
             let ret = self.elements.swap_remove(elem_index);
-            self.indices[self.elements[elem_index].0.into()] = elem_index;
+            self.indices[self.elements[elem_index].0.id().into()] = elem_index;
             Some(ret)
         }
     }
 
     pub fn remove_entry(&mut self, key: &K) -> Option<(K, V)>
     {
-        let pos: usize = (*key).into();
+        let pos: usize = key.id().into();
 
         if pos < self.indices.len() {
             let ret = self.remove_at(self.indices[pos]);
@@ -75,7 +75,7 @@ impl<K, V> DenseHashMap<K, V>
 
     pub fn insert(&mut self, key: K, value: V) -> Option<V>
     {
-        let pos: usize = key.into();
+        let pos: usize = key.id().into();
 
         if pos >= self.indices.len() {
             self.indices.resize(pos + 1, INVALID);
@@ -116,7 +116,7 @@ impl<K, V> DenseHashMap<K, V>
     pub fn get(&self, key: &K) -> Option<&V>
     {
         if self.contains_key(key) {
-            Some(&self.elements[self.indices[(*key).into()]].1)
+            Some(&self.elements[self.indices[key.id().into()]].1)
         }
         else {
             None
@@ -126,7 +126,7 @@ impl<K, V> DenseHashMap<K, V>
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V>
     {
         if self.contains_key(key) {
-            Some(&mut self.elements[self.indices[(*key).into()]].1)
+            Some(&mut self.elements[self.indices[key.id().into()]].1)
         }
         else {
             None
@@ -134,8 +134,8 @@ impl<K, V> DenseHashMap<K, V>
     }
 }
 
-impl<K, V> Index<&K> for DenseHashMap<K, V>
-    where K: IdLike
+impl<K, V> Index<&K> for DenseMap<K, V>
+    where K: Identifier
 {
     type Output = V;
 
@@ -145,8 +145,8 @@ impl<K, V> Index<&K> for DenseHashMap<K, V>
     }
 }
 
-impl<K, V> IndexMut<&K> for DenseHashMap<K, V>
-    where K: IdLike
+impl<K, V> IndexMut<&K> for DenseMap<K, V>
+    where K: Identifier
 {
     fn index_mut(&mut self, key: &K) -> &mut Self::Output
     {
@@ -156,36 +156,40 @@ impl<K, V> IndexMut<&K> for DenseHashMap<K, V>
 
 pub struct Entry<'a, K, V>
 {
-    parent: &'a mut DenseHashMap<K, V>,
+    parent: &'a mut DenseMap<K, V>,
     key: K
 }
 
 impl<'a, K, V> Entry<'a, K, V>
     where
-        K: IdLike + 'a,
+        K: Identifier + 'a,
         V: 'a
 {
     pub fn or_insert(self, value: V) -> &'a mut V
     {
+        let id = self.key.id();
+
         if !self.parent.contains_key(&self.key) {
             self.parent.insert(self.key, value);
         }
 
-        &mut self.parent[&self.key]
+        &mut self.parent.elements[id.into()].1
     }
 
     pub fn or_insert_with<F>(self, f: F) -> &'a mut V
         where F: FnOnce() -> V
     {
+        let id = self.key.id();
+
         if !self.parent.contains_key(&self.key) {
             self.parent.insert(self.key, f());
         }
 
-        &mut self.parent[&self.key]
+        &mut self.parent.elements[id.into()].1
     }
 }
 
-impl<K, V> IntoIterator for DenseHashMap<K, V>
+impl<K, V> IntoIterator for DenseMap<K, V>
 {
     type Item = (K, V);
 
@@ -197,7 +201,7 @@ impl<K, V> IntoIterator for DenseHashMap<K, V>
     }
 }
 
-impl<'a, K, V> IntoIterator for &'a DenseHashMap<K, V>
+impl<'a, K, V> IntoIterator for &'a DenseMap<K, V>
 {
     type Item = &'a (K, V);
 
@@ -209,7 +213,7 @@ impl<'a, K, V> IntoIterator for &'a DenseHashMap<K, V>
     }
 }
 
-impl<'a, K, V> IntoIterator for &'a mut DenseHashMap<K, V>
+impl<'a, K, V> IntoIterator for &'a mut DenseMap<K, V>
 {
     type Item = &'a mut (K, V);
 
