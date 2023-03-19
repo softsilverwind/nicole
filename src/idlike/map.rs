@@ -1,4 +1,4 @@
-use std::{fmt::Debug, marker::PhantomData};
+use std::{fmt::Debug, marker::PhantomData, ops::{Index, IndexMut}};
 
 use crate::identifier::IdLike;
 
@@ -9,7 +9,7 @@ pub struct IdMap<K, V> {
 }
 
 impl<K, V> IdMap<K, V>
-    where K: IdLike,
+    where K: IdLike
 {
     pub fn new() -> Self
     {
@@ -74,5 +74,35 @@ impl<K, V> IdMap<K, V>
             .enumerate()
             .rfind(|(_, x)| x.is_some()).map(|(i, _)| i.into())
             .unwrap_or_else(|| K::null())
+    }
+
+    pub fn get(&self, key: &K) -> Option<&V>
+    {
+        self.set.get((*key).into()).and_then(|x| x.as_ref())
+    }
+
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V>
+    {
+        self.set.get_mut((*key).into()).and_then(|x| x.as_mut())
+    }
+}
+
+impl<K, V> Index<&K> for IdMap<K, V>
+    where K: IdLike
+{
+    type Output = V;
+
+    fn index(&self, key: &K) -> &Self::Output
+    {
+        self.get(key).expect("Trying to get nonexistent element!")
+    }
+}
+
+impl<K, V> IndexMut<&K> for IdMap<K, V>
+    where K: IdLike
+{
+    fn index_mut(&mut self, key: &K) -> &mut Self::Output
+    {
+        self.get_mut(key).expect("Trying to get nonexistent element!")
     }
 }
