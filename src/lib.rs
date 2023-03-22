@@ -2,6 +2,7 @@ pub mod dense;
 pub mod identifier;
 pub mod idlike;
 pub mod index;
+pub mod typedvec;
 pub mod veclist;
 
 #[cfg(feature = "unsafe")] pub mod linkedlist;
