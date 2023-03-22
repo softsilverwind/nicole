@@ -60,9 +60,13 @@ Index invalidation notes:
 1. Splitting will invalidate **all** indices (which is unfortunate)
 1. Merging will keep all indices valid for the first list (the second list is consumed)
 
-## DenseHashMap / DenseHashSet / IdSet
+## DenseMap / DenseSet
 
-Collections that work on dense hash values. I.e., instead of using `Hash` trait, elements are "hashed" by an integer (`Identifier` trait), and collections are backed by vectors instead of hash tables.
+Collections where keys can be _densely_ hashed. I.e., instead of using `Hash` trait, elements are "hashed" by an integer (`Identifier` trait), and collections are backed by vectors instead of hash tables.
+
+## IdSet / IdMap / TypedVec
+
+Collections where keys are wrappers around usize (`IdLike` trait). These collections are backed by Vectors, and thus keys are not stored internally. For this reason, `iter`/`iter_mut` methods behave differently, as keys need to be copied. Thus, these collections are not drop-in replacements for standard collections.
 
 ## Usage example
 

@@ -61,17 +61,17 @@ impl<K, V> TypedVec<K, V>
         index.into() < self.inner.len()
     }
 
-    pub fn iter_enumerate(&self) -> impl Iterator<Item=(K, &V)>
+    pub fn iter(&self) -> impl Iterator<Item=(K, &V)>
     {
         self.inner.iter().enumerate().map(|(i, x)| (i.into(), x))
     }
 
-    pub fn iter_mut_enumerate(&mut self) -> impl Iterator<Item=(K, &mut V)>
+    pub fn iter_mut(&mut self) -> impl Iterator<Item=(K, &mut V)>
     {
         self.inner.iter_mut().enumerate().map(|(i, x)| (i.into(), x))
     }
 
-    pub fn into_iter_enumerate(self) -> impl Iterator<Item=(K, V)>
+    pub fn into_iter(self) -> impl Iterator<Item=(K, V)>
     {
         self.inner.into_iter().enumerate().map(|(i, x)| (i.into(), x))
     }

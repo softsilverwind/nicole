@@ -48,17 +48,15 @@ impl<K, V> IdMap<K, V>
         self.set[pos] = Some(value);
     }
 
-    pub fn iter_clone<'a>(&'a self) -> impl Iterator<Item=(K, V)> + 'a
-        where V: Clone
+    pub fn keys<'a>(&'a self) -> impl Iterator<Item = K> + 'a
     {
         self.set
             .iter()
-            .cloned()
             .enumerate()
-            .filter_map(|(id, elem)| elem.map(|x| (id.into(), x)))
+            .filter_map(|(id, elem)| elem.as_ref().map(|_| id.into()))
     }
 
-    pub fn iter_key_copy(&self) -> impl Iterator<Item=(K, &V)>
+    pub fn iter(&self) -> impl Iterator<Item=(K, &V)>
         where V: Clone
     {
         self.set
@@ -67,13 +65,22 @@ impl<K, V> IdMap<K, V>
             .filter_map(|(id, elem)| elem.as_ref().map(|x| (id.into(), x)))
     }
 
-    pub fn iter_key_copy_mut(&mut self) -> impl Iterator<Item=(K, &mut V)>
+    pub fn iter_mut(&mut self) -> impl Iterator<Item=(K, &mut V)>
         where V: Clone
     {
         self.set
             .iter_mut()
             .enumerate()
             .filter_map(|(id, elem)| elem.as_mut().map(|x| (id.into(), x)))
+    }
+
+    pub fn into_iter(self) -> impl Iterator<Item=(K, V)>
+        where V: Clone
+    {
+        self.set
+            .into_iter()
+            .enumerate()
+            .filter_map(|(id, elem)| elem.map(|x| (id.into(), x)))
     }
 
     pub fn max_key(&self) -> K
